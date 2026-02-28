@@ -19,7 +19,7 @@ export const getContests = async (req, res) => {
         res.json({ success: true, data: contests });
     } catch (error) {
         console.error('Get Contests Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: error.message || 'Internal Server Error', details: error });
     }
 };
 
@@ -31,6 +31,6 @@ export const createContest = async (req, res) => {
         res.status(201).json({ success: true, data: contest });
     } catch (error) {
         console.error('Create Contest Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: error.message || 'Internal Server Error', details: error });
     }
 };
