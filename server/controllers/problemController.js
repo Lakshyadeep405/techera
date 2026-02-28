@@ -5,15 +5,10 @@ export const getProblems = async (req, res) => {
         const { contestId } = req.params;
         const problems = await Problem.find({ contestId });
 
-        // Hide actual outputs for hidden test cases
+        // Mask expected output in the response just to be safe
         const sanitized = problems.map(p => {
             const prob = p.toObject();
-            prob.testCases = prob.testCases.map(tc => {
-                if (tc.isHidden) {
-                    return { input: '[Hidden]', output: '[Hidden]', isHidden: true };
-                }
-                return tc;
-            });
+            prob.expectedOutput = undefined; // Don't send the answer to the client!
             return prob;
         });
 
@@ -26,8 +21,8 @@ export const getProblems = async (req, res) => {
 
 export const createProblem = async (req, res) => {
     try {
-        const { title, description, inputFormat, outputFormat, testCases, timeLimit, contestId } = req.body;
-        const problem = new Problem({ title, description, inputFormat, outputFormat, testCases, timeLimit, contestId });
+        const { title, description, expectedOutput, timeLimit, contestId } = req.body;
+        const problem = new Problem({ title, description, expectedOutput, timeLimit, contestId });
         await problem.save();
         res.status(201).json({ success: true, data: problem });
     } catch (error) {

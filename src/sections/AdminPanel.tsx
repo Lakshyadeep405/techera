@@ -5,7 +5,6 @@ import {
   Trophy,
   Clock,
   FileText,
-  Trash2,
   CheckCircle2,
   AlertCircle,
   Loader2,
@@ -66,12 +65,9 @@ export default function AdminPanel() {
   // Create problem form
   const [problemTitle, setProblemTitle] = useState('');
   const [problemDesc, setProblemDesc] = useState('');
-  const [inputFormat, setInputFormat] = useState('');
-  const [outputFormat, setOutputFormat] = useState('');
+  const [expectedOutput, setExpectedOutput] = useState('');
   const [timeLimit, setTimeLimit] = useState('2000');
-  const [testCases, setTestCases] = useState<TestCase[]>([
-    { input: '', output: '', isHidden: false },
-  ]);
+
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -169,13 +165,8 @@ export default function AdminPanel() {
       setMessage({ type: 'error', text: 'Select a contest first' });
       return;
     }
-    if (!problemTitle || !problemDesc) {
-      setMessage({ type: 'error', text: 'Fill problem title and description' });
-      return;
-    }
-    const validTestCases = testCases.filter((tc) => tc.input.trim() && tc.output.trim());
-    if (validTestCases.length === 0) {
-      setMessage({ type: 'error', text: 'Add at least one test case' });
+    if (!problemTitle || !problemDesc || !expectedOutput) {
+      setMessage({ type: 'error', text: 'Fill all problem fields (title, description, expected output)' });
       return;
     }
     setLoading(true);
@@ -186,9 +177,7 @@ export default function AdminPanel() {
         body: JSON.stringify({
           title: problemTitle,
           description: problemDesc,
-          inputFormat,
-          outputFormat,
-          testCases: validTestCases,
+          expectedOutput,
           timeLimit: parseInt(timeLimit) || 2000,
           contestId: selectedContestId,
         }),
@@ -198,10 +187,8 @@ export default function AdminPanel() {
         setMessage({ type: 'success', text: `Problem "${problemTitle}" added!` });
         setProblemTitle('');
         setProblemDesc('');
-        setInputFormat('');
-        setOutputFormat('');
+        setExpectedOutput('');
         setTimeLimit('2000');
-        setTestCases([{ input: '', output: '', isHidden: false }]);
         fetchProblems(selectedContestId);
       } else {
         setMessage({ type: 'error', text: 'Failed to create problem' });
@@ -212,22 +199,7 @@ export default function AdminPanel() {
     setLoading(false);
   };
 
-  // Add test case
-  const addTestCase = () => {
-    setTestCases([...testCases, { input: '', output: '', isHidden: false }]);
-  };
 
-  // Remove test case
-  const removeTestCase = (idx: number) => {
-    setTestCases(testCases.filter((_, i) => i !== idx));
-  };
-
-  // Update test case
-  const updateTestCase = (idx: number, field: keyof TestCase, value: string | boolean) => {
-    const updated = [...testCases];
-    (updated[idx] as any)[field] = value;
-    setTestCases(updated);
-  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -457,27 +429,15 @@ export default function AdminPanel() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm text-gray-400 block mb-1">Input Format</label>
-                        <textarea
-                          placeholder="Describe input format..."
-                          value={inputFormat}
-                          onChange={(e) => setInputFormat(e.target.value)}
-                          rows={2}
-                          className="w-full px-3 py-2 rounded-lg bg-[#1A202C] border border-white/10 text-white text-sm outline-none resize-none focus:border-[#6B46C1] placeholder:text-gray-600"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-400 block mb-1">Output Format</label>
-                        <textarea
-                          placeholder="Describe output format..."
-                          value={outputFormat}
-                          onChange={(e) => setOutputFormat(e.target.value)}
-                          rows={2}
-                          className="w-full px-3 py-2 rounded-lg bg-[#1A202C] border border-white/10 text-white text-sm outline-none resize-none focus:border-[#6B46C1] placeholder:text-gray-600"
-                        />
-                      </div>
+                    <div>
+                      <label className="text-sm text-gray-400 block mb-1">Expected Output (Exact Match)</label>
+                      <textarea
+                        placeholder="e.g. 5"
+                        value={expectedOutput}
+                        onChange={(e) => setExpectedOutput(e.target.value)}
+                        rows={4}
+                        className="w-full px-3 py-2 rounded-lg bg-[#1A202C] border border-white/10 text-white text-sm font-mono outline-none resize-none focus:border-[#6B46C1] placeholder:text-gray-600"
+                      />
                     </div>
 
                     <div>
@@ -491,85 +451,6 @@ export default function AdminPanel() {
                         onChange={(e) => setTimeLimit(e.target.value)}
                         className="bg-[#1A202C] border-white/10 text-white w-40"
                       />
-                    </div>
-
-                    {/* Test Cases */}
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <label className="text-sm text-gray-400">
-                          Test Cases ({testCases.length})
-                        </label>
-                        <button
-                          onClick={addTestCase}
-                          className="flex items-center gap-1 text-xs text-[#9F7AEA] hover:text-white transition-colors"
-                        >
-                          <Plus className="w-3 h-3" /> Add Test Case
-                        </button>
-                      </div>
-
-                      <div className="space-y-3">
-                        {testCases.map((tc, idx) => (
-                          <div
-                            key={idx}
-                            className="bg-[#1A202C] rounded-xl p-4 border border-white/5"
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs text-gray-500">
-                                Test Case #{idx + 1}
-                              </span>
-                              <div className="flex items-center gap-3">
-                                <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={tc.isHidden}
-                                    onChange={(e) =>
-                                      updateTestCase(idx, 'isHidden', e.target.checked)
-                                    }
-                                    className="rounded"
-                                  />
-                                  Hidden
-                                </label>
-                                {testCases.length > 1 && (
-                                  <button
-                                    onClick={() => removeTestCase(idx)}
-                                    className="text-red-400 hover:text-red-300"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <span className="text-xs text-gray-500 block mb-1">Input</span>
-                                <textarea
-                                  value={tc.input}
-                                  onChange={(e) =>
-                                    updateTestCase(idx, 'input', e.target.value)
-                                  }
-                                  rows={2}
-                                  className="w-full px-3 py-2 rounded-lg bg-[#2D3748] border border-white/5 text-white text-xs font-mono outline-none resize-none focus:border-[#6B46C1]"
-                                  placeholder="Input..."
-                                />
-                              </div>
-                              <div>
-                                <span className="text-xs text-gray-500 block mb-1">
-                                  Expected Output
-                                </span>
-                                <textarea
-                                  value={tc.output}
-                                  onChange={(e) =>
-                                    updateTestCase(idx, 'output', e.target.value)
-                                  }
-                                  rows={2}
-                                  className="w-full px-3 py-2 rounded-lg bg-[#2D3748] border border-white/5 text-white text-xs font-mono outline-none resize-none focus:border-[#6B46C1]"
-                                  placeholder="Expected output..."
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
                     </div>
 
                     <Button
@@ -619,7 +500,6 @@ export default function AdminPanel() {
                           <div>
                             <h4 className="font-semibold text-white">{p.title}</h4>
                             <div className="flex items-center gap-3 text-xs text-gray-500">
-                              <span>{p.testCases.length} test cases</span>
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 {p.timeLimit}ms

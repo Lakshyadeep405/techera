@@ -23,62 +23,45 @@ export const submitCode = async (req, res) => {
         await submission.save();
 
         let finalVerdict = 'Accepted';
-        let maxTimeTaken = 0;
 
-        // Verify across all test cases
-        for (let i = 0; i < problem.testCases.length; i++) {
-            const testCase = problem.testCases[i];
+        // Execute code via Piston with NO standard input
+        const startTime = Date.now();
+        const execResult = await executeCode(language, version, code, "", problem.timeLimit);
+        const timeTaken = Date.now() - startTime;
 
-            // Execute code via Piston
-            const startTime = Date.now();
-            const execResult = await executeCode(language, version, code, testCase.input, problem.timeLimit);
-            const timeTaken = Date.now() - startTime;
-
-            maxTimeTaken = Math.max(maxTimeTaken, timeTaken);
-
-            if (!execResult.success) {
-                finalVerdict = 'Runtime Error';
-                break;
-            }
-
+        if (!execResult.success) {
+            finalVerdict = 'Runtime Error';
+        } else {
             const runResult = execResult.data.run;
             const compileResult = execResult.data.compile;
 
             if (compileResult && compileResult.code !== 0) {
                 finalVerdict = 'Compilation Error';
-                break;
-            }
-
-            if (runResult.signal === 'SIGKILL' || timeTaken >= problem.timeLimit) {
+            } else if (runResult.signal === 'SIGKILL' || timeTaken >= problem.timeLimit) {
                 finalVerdict = 'Time Limit Exceeded';
-                break;
-            }
-
-            if (runResult.code !== 0) {
+            } else if (runResult.code !== 0) {
                 finalVerdict = 'Runtime Error';
-                break;
-            }
+            } else {
+                // Compare Output
+                const actualOutput = runResult.stdout.trim();
+                const expectedOutput = problem.expectedOutput.trim();
 
-            // Compare Output
-            const actualOutput = runResult.stdout.trim();
-            const expectedOutput = testCase.output.trim();
-
-            if (actualOutput !== expectedOutput) {
-                finalVerdict = 'Wrong Answer';
-                break;
+                if (actualOutput !== expectedOutput) {
+                    finalVerdict = 'Wrong Answer';
+                }
             }
         }
 
         // Update submission tracking
         submission.verdict = finalVerdict;
-        submission.timeTaken = maxTimeTaken;
+        submission.timeTaken = timeTaken;
         await submission.save();
 
         return res.json({
             success: true,
             submissionId: submission._id,
             verdict: finalVerdict,
-            timeTaken: maxTimeTaken
+            timeTaken: timeTaken
         });
 
     } catch (error) {

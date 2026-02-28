@@ -35,9 +35,7 @@ interface ProblemData {
     _id: string;
     title: string;
     description: string;
-    inputFormat: string;
-    outputFormat: string;
-    testCases: { input: string; output: string; isHidden: boolean }[];
+    expectedOutput?: string;
     timeLimit: number;
     contestId: string;
 }

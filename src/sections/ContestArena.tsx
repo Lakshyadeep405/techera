@@ -339,38 +339,6 @@ export default function ContestArena() {
                                             <p className="text-gray-300 whitespace-pre-wrap">{selectedProblem.description}</p>
                                         </div>
 
-                                        <div className="space-y-4">
-                                            <div className="bg-[#1A202C] rounded-xl p-4">
-                                                <h4 className="text-sm font-semibold text-[#9F7AEA] mb-2">Input Format</h4>
-                                                <p className="text-gray-400 text-sm whitespace-pre-wrap">{selectedProblem.inputFormat}</p>
-                                            </div>
-                                            <div className="bg-[#1A202C] rounded-xl p-4">
-                                                <h4 className="text-sm font-semibold text-[#9F7AEA] mb-2">Output Format</h4>
-                                                <p className="text-gray-400 text-sm whitespace-pre-wrap">{selectedProblem.outputFormat}</p>
-                                            </div>
-                                        </div>
-
-                                        {/* Sample test cases (non-hidden) */}
-                                        {selectedProblem.testCases.filter((tc) => !tc.isHidden).length > 0 && (
-                                            <div className="mt-6 space-y-3">
-                                                <h4 className="text-sm font-semibold text-white">Sample Test Cases</h4>
-                                                {selectedProblem.testCases
-                                                    .filter((tc) => !tc.isHidden)
-                                                    .map((tc, idx) => (
-                                                        <div key={idx} className="grid grid-cols-2 gap-3">
-                                                            <div className="bg-[#1A202C] rounded-lg p-3">
-                                                                <span className="text-xs text-gray-500 block mb-1">Input</span>
-                                                                <pre className="text-sm text-gray-300 font-mono">{tc.input}</pre>
-                                                            </div>
-                                                            <div className="bg-[#1A202C] rounded-lg p-3">
-                                                                <span className="text-xs text-gray-500 block mb-1">Output</span>
-                                                                <pre className="text-sm text-gray-300 font-mono">{tc.output}</pre>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                            </div>
-                                        )}
-
                                         <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
                                             <Clock className="w-3 h-3" />
                                             Time Limit: {selectedProblem.timeLimit}ms
