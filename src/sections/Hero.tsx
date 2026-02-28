@@ -4,95 +4,345 @@ import { Play, Timer, BarChart3, Trophy, Sparkles, Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuizStore } from '@/store/quizStore';
 
-// Particle background component
+// AI-themed background with mechanical robot
 const ParticleBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     let animationId: number;
-    let particles: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      radius: number;
-      color: string;
-    }> = [];
+    let time = 0;
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
-    const createParticles = () => {
-      particles = [];
-      const colors = ['#6B46C1', '#D53F8C', '#9F7AEA', '#3182CE'];
-      for (let i = 0; i < 50; i++) {
-        particles.push({
+    // Robot state
+    const robot = {
+      x: 0,
+      y: 0,
+      direction: 1,
+      walkCycle: 0,
+      eyeGlow: 0,
+    };
+
+    // Floating gears
+    const gears: Array<{ x: number; y: number; radius: number; teeth: number; speed: number; rotation: number }> = [];
+    // Circuit nodes
+    const nodes: Array<{ x: number; y: number; pulse: number; connections: number[] }> = [];
+    // Binary rain columns
+    const binaryColumns: Array<{ x: number; chars: string[]; y: number; speed: number }> = [];
+
+    const init = () => {
+      robot.y = canvas.height * 0.72;
+      robot.x = canvas.width * 0.15;
+
+      // Create gears
+      gears.length = 0;
+      for (let i = 0; i < 6; i++) {
+        gears.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height * 0.6,
+          radius: 15 + Math.random() * 25,
+          teeth: Math.floor(6 + Math.random() * 6),
+          speed: (Math.random() - 0.5) * 0.02,
+          rotation: Math.random() * Math.PI * 2,
+        });
+      }
+
+      // Create circuit nodes
+      nodes.length = 0;
+      for (let i = 0; i < 20; i++) {
+        const conns: number[] = [];
+        const numConns = Math.floor(1 + Math.random() * 2);
+        for (let j = 0; j < numConns; j++) {
+          conns.push(Math.floor(Math.random() * 20));
+        }
+        nodes.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          radius: Math.random() * 2 + 1,
-          color: colors[Math.floor(Math.random() * colors.length)],
+          pulse: Math.random() * Math.PI * 2,
+          connections: conns,
+        });
+      }
+
+      // Binary rain
+      binaryColumns.length = 0;
+      for (let i = 0; i < 15; i++) {
+        const chars: string[] = [];
+        for (let j = 0; j < 8; j++) {
+          chars.push(Math.random() > 0.5 ? '1' : '0');
+        }
+        binaryColumns.push({
+          x: Math.random() * canvas.width,
+          chars,
+          y: Math.random() * canvas.height,
+          speed: 0.3 + Math.random() * 0.7,
         });
       }
     };
 
+    const drawGear = (x: number, y: number, radius: number, teeth: number, rotation: number, alpha: number) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = '#6B46C1';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.3, 0, Math.PI * 2);
+      ctx.stroke();
+      const innerR = radius * 0.7;
+      const outerR = radius;
+      for (let i = 0; i < teeth; i++) {
+        const angle = (i / teeth) * Math.PI * 2;
+        const nextAngle = ((i + 0.5) / teeth) * Math.PI * 2;
+        const midAngle = ((i + 0.25) / teeth) * Math.PI * 2;
+        const midAngle2 = ((i + 0.75) / teeth) * Math.PI * 2;
+        if (i === 0) {
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(angle) * innerR, Math.sin(angle) * innerR);
+        }
+        ctx.lineTo(Math.cos(midAngle) * outerR, Math.sin(midAngle) * outerR);
+        ctx.lineTo(Math.cos(midAngle2) * outerR, Math.sin(midAngle2) * outerR);
+        ctx.lineTo(Math.cos(nextAngle) * innerR, Math.sin(nextAngle) * innerR);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const drawRobot = (x: number, y: number, walkPhase: number, eyeGlow: number) => {
+      ctx.save();
+      ctx.translate(x, y);
+
+      // Body glow
+      const glow = ctx.createRadialGradient(0, -30, 5, 0, -30, 60);
+      glow.addColorStop(0, `rgba(107, 70, 193, ${0.15 + eyeGlow * 0.1})`);
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow;
+      ctx.fillRect(-60, -90, 120, 120);
+
+      const legOffset = Math.sin(walkPhase) * 8;
+
+      // Legs
+      ctx.strokeStyle = '#4A5568';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(-10, 10);
+      ctx.lineTo(-12 - legOffset, 40);
+      ctx.lineTo(-14 - legOffset, 50);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(10, 10);
+      ctx.lineTo(12 + legOffset, 40);
+      ctx.lineTo(14 + legOffset, 50);
+      ctx.stroke();
+
+      // Feet
+      ctx.fillStyle = '#2D3748';
+      ctx.fillRect(-20 - legOffset, 48, 12, 5);
+      ctx.fillRect(8 + legOffset, 48, 12, 5);
+
+      // Body
+      ctx.fillStyle = '#2D3748';
+      ctx.beginPath();
+      ctx.roundRect(-20, -35, 40, 48, 6);
+      ctx.fill();
+      ctx.strokeStyle = '#6B46C1';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Chest light
+      ctx.fillStyle = `rgba(159, 122, 234, ${0.5 + eyeGlow * 0.5})`;
+      ctx.beginPath();
+      ctx.arc(0, -15, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = `rgba(159, 122, 234, ${0.2 + eyeGlow * 0.2})`;
+      ctx.beginPath();
+      ctx.arc(0, -15, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Circuit lines on body
+      ctx.strokeStyle = `rgba(107, 70, 193, ${0.3 + eyeGlow * 0.3})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(-10, -25);
+      ctx.lineTo(-15, -20);
+      ctx.lineTo(-15, -5);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(10, -25);
+      ctx.lineTo(15, -20);
+      ctx.lineTo(15, -5);
+      ctx.stroke();
+
+      // Arms with swing
+      const armSwing = Math.sin(walkPhase) * 10;
+      ctx.strokeStyle = '#4A5568';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(-20, -25);
+      ctx.lineTo(-30, -15 + armSwing);
+      ctx.lineTo(-28, 0 + armSwing);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(20, -25);
+      ctx.lineTo(30, -15 - armSwing);
+      ctx.lineTo(28, 0 - armSwing);
+      ctx.stroke();
+
+      // Hands
+      ctx.fillStyle = '#6B46C1';
+      ctx.beginPath();
+      ctx.arc(-28, 0 + armSwing, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(28, 0 - armSwing, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Head
+      ctx.fillStyle = '#2D3748';
+      ctx.beginPath();
+      ctx.roundRect(-16, -60, 32, 26, 5);
+      ctx.fill();
+      ctx.strokeStyle = '#6B46C1';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Antenna
+      ctx.strokeStyle = '#4A5568';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, -60);
+      ctx.lineTo(0, -70);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(246, 135, 179, ${0.6 + eyeGlow * 0.4})`;
+      ctx.beginPath();
+      ctx.arc(0, -72, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyes
+      const eyeBrightness = 0.7 + eyeGlow * 0.3;
+      ctx.fillStyle = `rgba(56, 178, 172, ${eyeBrightness})`;
+      ctx.shadowColor = 'rgba(56, 178, 172, 0.8)';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.arc(-7, -50, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(7, -50, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Mouth (LED strip)
+      for (let i = -2; i <= 2; i++) {
+        ctx.fillStyle = `rgba(159, 122, 234, ${0.3 + eyeGlow * 0.4})`;
+        ctx.fillRect(i * 5 - 1.5, -41, 3, 2);
+      }
+
+      ctx.restore();
+    };
+
     const animate = () => {
-      ctx.fillStyle = 'rgba(26, 32, 44, 0.1)';
+      time += 0.016;
+      ctx.fillStyle = 'rgba(26, 32, 44, 0.15)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      particles.forEach((particle) => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
+      // Draw gradient background overlay periodically
+      if (Math.floor(time * 60) % 30 === 0) {
+        const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        bg.addColorStop(0, 'rgba(26, 32, 44, 0.95)');
+        bg.addColorStop(0.5, 'rgba(45, 55, 72, 0.95)');
+        bg.addColorStop(1, 'rgba(26, 32, 44, 0.95)');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
 
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        ctx.fillStyle = particle.color;
-        ctx.fill();
-      });
-
-      // Draw connections
-      particles.forEach((p1, i) => {
-        particles.slice(i + 1).forEach((p2) => {
-          const dx = p1.x - p2.x;
-          const dy = p1.y - p2.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 150) {
+      // Draw circuit connections
+      ctx.strokeStyle = 'rgba(107, 70, 193, 0.08)';
+      ctx.lineWidth = 1;
+      nodes.forEach((node, i) => {
+        node.pulse += 0.02;
+        node.connections.forEach(j => {
+          if (j < nodes.length && j !== i) {
             ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(107, 70, 193, ${0.2 * (1 - distance / 150)})`;
+            ctx.moveTo(node.x, node.y);
+            // Right-angle circuit paths
+            const midX = (node.x + nodes[j].x) / 2;
+            ctx.lineTo(midX, node.y);
+            ctx.lineTo(midX, nodes[j].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
             ctx.stroke();
           }
         });
+
+        // Pulsing node
+        const pulseAlpha = 0.2 + Math.sin(node.pulse) * 0.15;
+        ctx.fillStyle = `rgba(159, 122, 234, ${pulseAlpha})`;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+        ctx.fill();
       });
+
+      // Draw gears
+      gears.forEach(gear => {
+        gear.rotation += gear.speed;
+        drawGear(gear.x, gear.y, gear.radius, gear.teeth, gear.rotation, 0.12);
+      });
+
+      // Binary rain
+      ctx.font = '10px monospace';
+      binaryColumns.forEach(col => {
+        col.y += col.speed;
+        if (col.y > canvas.height + 100) {
+          col.y = -80;
+          col.x = Math.random() * canvas.width;
+        }
+        col.chars.forEach((ch, i) => {
+          const alpha = 0.06 + (i / col.chars.length) * 0.08;
+          ctx.fillStyle = `rgba(56, 178, 172, ${alpha})`;
+          ctx.fillText(ch, col.x, col.y + i * 12);
+        });
+      });
+
+      // Robot walking
+      robot.walkCycle += 0.04;
+      robot.x += 0.3 * robot.direction;
+      robot.eyeGlow = (Math.sin(time * 2) + 1) / 2;
+
+      if (robot.x > canvas.width + 50) {
+        robot.direction = -1;
+      } else if (robot.x < -50) {
+        robot.direction = 1;
+      }
+
+      ctx.save();
+      if (robot.direction < 0) {
+        ctx.translate(robot.x * 2, 0);
+        ctx.scale(-1, 1);
+      }
+      drawRobot(robot.x, robot.y, robot.walkCycle, robot.eyeGlow);
+      ctx.restore();
 
       animationId = requestAnimationFrame(animate);
     };
 
     resize();
-    createParticles();
+    init();
     animate();
 
-    window.addEventListener('resize', () => {
-      resize();
-      createParticles();
-    });
+    const handleResize = () => { resize(); init(); };
+    window.addEventListener('resize', handleResize);
 
     return () => {
       cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -100,7 +350,7 @@ const ParticleBackground = () => {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full"
-      style={{ background: 'linear-gradient(135deg, #1A202C 0%, #2D3748 50%, #1A202C 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #0F1419 0%, #1A202C 40%, #171923 100%)' }}
     />
   );
 };
