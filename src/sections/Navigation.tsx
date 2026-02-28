@@ -93,7 +93,7 @@ export default function Navigation() {
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
-        ? 'bg-black/90 backdrop-blur-xl border-b border-white/10'
+        ? 'bg-white/90 backdrop-blur-xl border-b border-black/10 shadow-sm'
         : 'bg-transparent'
         }`}
     >
@@ -105,10 +105,10 @@ export default function Navigation() {
             whileHover={{ scale: 1.05 }}
             onClick={() => scrollToSection('home')}
           >
-            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center">
-              <Code2 className="w-6 h-6 text-black" />
+            <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
+              <Code2 className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl md:text-2xl font-bold text-white">
+            <span className="text-xl md:text-2xl font-bold text-black">
               DEBUGX
             </span>
           </motion.div>
@@ -123,15 +123,15 @@ export default function Navigation() {
                 transition={{ delay: 0.2 + index * 0.1, ease: 'backOut' }}
                 onClick={() => scrollToSection(link.id)}
                 className={`relative text-sm font-medium transition-colors ${currentView === link.id
-                  ? 'text-white'
-                  : 'text-white/40 hover:text-white'
+                  ? 'text-black'
+                  : 'text-black/40 hover:text-black'
                   }`}
               >
                 {link.label}
                 {currentView === link.id && (
                   <motion.div
                     layoutId="navUnderline"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-white"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-black"
                   />
                 )}
               </motion.button>
@@ -146,11 +146,11 @@ export default function Navigation() {
                 animate={{ scale: 1 }}
                 className="flex items-center gap-3"
               >
-                <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10">
-                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
+                <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-black/5 border border-black/10">
+                  <div className="w-8 h-8 rounded-full bg-black/10 flex items-center justify-center">
+                    <User className="w-4 h-4 text-black" />
                   </div>
-                  <span className="text-sm font-medium text-white">{currentUser.name}</span>
+                  <span className="text-sm font-medium text-black">{currentUser.name}</span>
                   {currentUser.isAdmin && (
                     <span className="px-2 py-0.5 rounded-full bg-[#DD6B20]/20 text-[#DD6B20] text-xs">
                       Admin
@@ -159,7 +159,7 @@ export default function Navigation() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                  className="p-2 rounded-lg text-black/40 hover:text-black hover:bg-black/5 transition-colors"
                   title="Logout"
                 >
                   <LogOut className="w-5 h-5" />
@@ -173,7 +173,7 @@ export default function Navigation() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black/5 border border-black/10 text-black/50 hover:text-black hover:bg-black/10 transition-colors"
                     >
                       <Lock className="w-4 h-4" />
                       Admin
@@ -220,7 +220,7 @@ export default function Navigation() {
                   <DialogTrigger asChild>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button
-                        className="bg-white text-black hover:bg-white/90 font-semibold px-6"
+                        className="bg-black text-white hover:bg-black/85 font-semibold px-6"
                       >
                         LOGIN
                       </Button>
@@ -253,7 +253,7 @@ export default function Navigation() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-white"
+            className="md:hidden text-black"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -268,7 +268,7 @@ export default function Navigation() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-black/95 backdrop-blur-xl border-t border-white/10"
+            className="md:hidden bg-white/95 backdrop-blur-xl border-t border-black/10"
           >
             <div className="px-4 py-4 space-y-2">
               {navLinks.map((link) => (
