@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navigation from '@/sections/Navigation';
 import Hero from '@/sections/Hero';
-import Categories from '@/sections/Categories';
+
 import QuizInterface from '@/sections/QuizInterface';
 import AdminPanel from '@/sections/AdminPanel';
 import Leaderboard from '@/sections/Leaderboard';
@@ -115,7 +115,7 @@ const MainContent = () => {
           className="bg-[#1A202C] min-h-screen"
         >
           <div className="pt-20">
-            <Categories />
+
           </div>
           <Footer />
         </motion.div>
@@ -131,7 +131,6 @@ const MainContent = () => {
           className="bg-[#1A202C]"
         >
           <Hero />
-          <Categories />
           <Footer />
         </motion.div>
       );
