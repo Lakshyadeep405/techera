@@ -32,14 +32,21 @@ app.get('/', (req, res) => {
 // Database connection
 const connectDB = async () => {
     try {
-        if (process.env.MONGO_URI) {
-            await mongoose.connect(process.env.MONGO_URI);
-            console.log('MongoDB Connected');
-        } else {
+        if (!process.env.MONGO_URI) {
             console.log('MongoDB URI not found. Running without DB.');
+            return;
         }
+
+        mongoose.connection.on('connected', () => console.log('✅ MongoDB connection established'));
+        mongoose.connection.on('error', (err) => console.error('❌ Mongoose connection error:', err));
+        mongoose.connection.on('disconnected', () => console.log('⚠️ MongoDB disconnected'));
+
+        await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 5000,
+        });
+
     } catch (err) {
-        console.error('MongoDB Connection Error:', err);
+        console.error('❌ MongoDB Connection failed immediately:', err.message);
     }
 };
 
