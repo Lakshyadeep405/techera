@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { 
-  Brain, 
-  Clock, 
+import {
+  Brain,
+  Clock,
   BarChart3,
   Play,
   Trophy,
@@ -85,16 +85,16 @@ export default function Categories() {
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             className="inline-block px-4 py-1 rounded-full bg-[#6B46C1]/20 text-[#9F7AEA] text-sm font-medium mb-4"
           >
-            Management Day Quiz 2024
+            DebugX Quick Quiz
           </motion.span>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Ready to{' '}
+            Test Your{' '}
             <span className="bg-gradient-to-r from-[#9F7AEA] to-[#F687B3] bg-clip-text text-transparent">
-              Play?
+              Code IQ
             </span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Test your knowledge across Management, History, Sports, Entertainment, Economics, Mythology, and Current Affairs. 
+            Think you know coding? Test your knowledge across DSA, Algorithms, Web Dev, Databases, OS, and more.
             One quiz, 100 questions, 20 minutes!
           </p>
         </motion.div>
@@ -108,7 +108,7 @@ export default function Categories() {
         >
           {/* Glow Effect */}
           <div className="absolute -inset-1 bg-gradient-to-r from-[#6B46C1] via-[#D53F8C] to-[#9F7AEA] rounded-3xl blur-xl opacity-30" />
-          
+
           <div className="relative bg-[#2D3748] rounded-3xl p-8 md:p-12 border border-white/10 overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-5">
@@ -127,7 +127,7 @@ export default function Categories() {
                 >
                   <Brain className="w-12 h-12 text-white" />
                 </motion.div>
-                
+
                 <div className="text-center md:text-left">
                   <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
                     {megaQuiz.title}
@@ -173,7 +173,7 @@ export default function Categories() {
                     transition={{ delay: 0.5 + index * 0.1 }}
                     className="bg-[#1A202C] rounded-2xl p-4 text-center"
                   >
-                    <div 
+                    <div
                       className="w-10 h-10 rounded-lg mx-auto mb-2 flex items-center justify-center"
                       style={{ backgroundColor: `${stat.color}20` }}
                     >
@@ -187,7 +187,7 @@ export default function Categories() {
 
               {/* Categories Tags */}
               <div className="flex flex-wrap justify-center gap-2 mb-8">
-                {['Management', 'History', 'Sports', 'Entertainment', 'Economics', 'Mythology', 'Current Affairs'].map((cat, index) => (
+                {['DSA', 'Algorithms', 'Web Dev', 'Databases', 'OS', 'Networking', 'OOP'].map((cat, index) => (
                   <motion.span
                     key={cat}
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -213,9 +213,9 @@ export default function Categories() {
                   className="group bg-gradient-to-r from-[#6B46C1] to-[#D53F8C] hover:from-[#553C9A] hover:to-[#B83280] text-white font-bold text-lg px-12 py-7 rounded-full shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300"
                 >
                   <Play className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
-                  START QUIZ NOW
+                  START CODING QUIZ
                 </Button>
-                
+
                 {currentUser && (
                   <p className="mt-4 text-sm text-gray-500">
                     Playing as <span className="text-[#9F7AEA]">{currentUser.name}</span>
@@ -236,8 +236,8 @@ export default function Categories() {
           {[
             {
               icon: Clock,
-              title: 'Watch the Clock',
-              description: 'You have 20 minutes to answer all 100 questions. Manage your time wisely!'
+              title: 'Race the Clock',
+              description: 'You have 20 minutes to crack all 100 coding questions. Speed and accuracy win!'
             },
             {
               icon: Trophy,
@@ -247,7 +247,7 @@ export default function Categories() {
             {
               icon: Users,
               title: 'Climb the Ranks',
-              description: 'Your score will be added to the live leaderboard. Compete with everyone!'
+              description: 'Your score hits the live leaderboard. Compete with coders across DebugX!'
             }
           ].map((item, index) => (
             <motion.div

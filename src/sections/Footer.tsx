@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Brain, 
-  Send, 
-  Facebook, 
-  Twitter, 
-  Instagram, 
+import {
+  Code,
+  Send,
+  Facebook,
+  Twitter,
+  Instagram,
   Github,
   Mail,
   MapPin,
@@ -32,16 +32,16 @@ export default function Footer() {
 
   const quickLinks = [
     { label: 'Home', href: '#' },
-    { label: 'Quizzes', href: '#' },
+    { label: 'Contests', href: '#' },
     { label: 'Leaderboard', href: '#' },
     { label: 'About Us', href: '#' },
   ];
 
   const categories = [
-    { label: 'Management', href: '#' },
-    { label: 'History', href: '#' },
-    { label: 'Sports', href: '#' },
-    { label: 'Entertainment', href: '#' },
+    { label: 'Algorithms', href: '#' },
+    { label: 'Data Structures', href: '#' },
+    { label: 'Web Dev', href: '#' },
+    { label: 'Databases', href: '#' },
   ];
 
   const support = [
@@ -72,13 +72,13 @@ export default function Footer() {
               className="flex items-center gap-2 mb-6"
             >
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6B46C1] to-[#D53F8C] flex items-center justify-center">
-                <Brain className="w-6 h-6 text-white" />
+                <Code className="w-6 h-6 text-white" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-[#9F7AEA] to-[#F687B3] bg-clip-text text-transparent">
-                QUIZZERIA
+                DEBUGX
               </span>
             </motion.div>
-            
+
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -86,8 +86,8 @@ export default function Footer() {
               transition={{ delay: 0.1 }}
               className="text-gray-400 mb-6 max-w-sm"
             >
-              Challenge yourself with interactive quizzes across various categories. 
-              Play bold, be unleashed, and climb the leaderboard!
+              Compete in live coding contests, solve algorithmic challenges,
+              and climb the leaderboard. Code bold, debug harder!
             </motion.p>
 
             {/* Contact Info */}
@@ -100,7 +100,7 @@ export default function Footer() {
             >
               <div className="flex items-center gap-3 text-gray-400">
                 <Mail className="w-4 h-4 text-[#9F7AEA]" />
-                <span className="text-sm">support@quizzeria.com</span>
+                <span className="text-sm">support@debugx.dev</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Phone className="w-4 h-4 text-[#9F7AEA]" />
@@ -191,9 +191,9 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h4 className="text-white font-semibold mb-1">Subscribe to our newsletter</h4>
-              <p className="text-gray-400 text-sm">Get the latest quizzes and updates delivered to your inbox</p>
+              <p className="text-gray-400 text-sm">Get the latest contests and updates delivered to your inbox</p>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="flex gap-3 w-full md:w-auto">
               <Input
                 type="email"
@@ -232,9 +232,9 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm flex items-center gap-1">
-              Made with <Heart className="w-4 h-4 text-[#D53F8C] fill-current" /> by Quizzeria Team
+              Made with <Heart className="w-4 h-4 text-[#D53F8C] fill-current" /> by DebugX Team
             </p>
-            
+
             {/* Social Links */}
             <div className="flex items-center gap-4">
               {socialLinks.map((social) => (
