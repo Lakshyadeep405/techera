@@ -93,8 +93,8 @@ export default function Navigation() {
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
-          ? 'bg-[#1A202C]/90 backdrop-blur-xl border-b border-white/10'
-          : 'bg-transparent'
+        ? 'bg-black/90 backdrop-blur-xl border-b border-white/10'
+        : 'bg-transparent'
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -105,10 +105,10 @@ export default function Navigation() {
             whileHover={{ scale: 1.05 }}
             onClick={() => scrollToSection('home')}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6B46C1] to-[#D53F8C] flex items-center justify-center">
-              <Code2 className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center">
+              <Code2 className="w-6 h-6 text-black" />
             </div>
-            <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#9F7AEA] to-[#F687B3] bg-clip-text text-transparent">
+            <span className="text-xl md:text-2xl font-bold text-white">
               DEBUGX
             </span>
           </motion.div>
@@ -123,15 +123,15 @@ export default function Navigation() {
                 transition={{ delay: 0.2 + index * 0.1, ease: 'backOut' }}
                 onClick={() => scrollToSection(link.id)}
                 className={`relative text-sm font-medium transition-colors ${currentView === link.id
-                    ? 'text-[#9F7AEA]'
-                    : 'text-gray-300 hover:text-white'
+                  ? 'text-white'
+                  : 'text-white/40 hover:text-white'
                   }`}
               >
                 {link.label}
                 {currentView === link.id && (
                   <motion.div
                     layoutId="navUnderline"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#6B46C1] to-[#D53F8C]"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-white"
                   />
                 )}
               </motion.button>
@@ -147,7 +147,7 @@ export default function Navigation() {
                 className="flex items-center gap-3"
               >
                 <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#3182CE] to-[#38B2AC] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-sm font-medium text-white">{currentUser.name}</span>
@@ -173,13 +173,13 @@ export default function Navigation() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2D3748] text-gray-300 hover:text-white hover:bg-[#3D4758] transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 transition-colors"
                     >
                       <Lock className="w-4 h-4" />
                       Admin
                     </motion.button>
                   </DialogTrigger>
-                  <DialogContent className="bg-[#2D3748] border-white/10">
+                  <DialogContent className="bg-[#111] border-white/10">
                     <DialogHeader>
                       <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
                         <Lock className="w-6 h-6 text-[#DD6B20]" />
@@ -199,14 +199,14 @@ export default function Navigation() {
                           setAdminError('');
                         }}
                         onKeyDown={(e) => e.key === 'Enter' && handleAdminLogin()}
-                        className="bg-[#1A202C] border-white/10 text-white placeholder:text-gray-500"
+                        className="bg-black border-white/10 text-white placeholder:text-white/30"
                       />
                       {adminError && (
                         <p className="text-red-400 text-sm">{adminError}</p>
                       )}
                       <Button
                         onClick={handleAdminLogin}
-                        className="w-full bg-gradient-to-r from-[#DD6B20] to-[#D53F8C] hover:from-[#C55A1A] hover:to-[#B83280] text-white font-semibold"
+                        className="w-full bg-white text-black hover:bg-white/90 font-semibold"
                       >
                         <BarChart3 className="w-4 h-4 mr-2" />
                         Access Admin Panel
@@ -220,13 +220,13 @@ export default function Navigation() {
                   <DialogTrigger asChild>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button
-                        className="bg-gradient-to-r from-[#6B46C1] to-[#D53F8C] hover:from-[#553C9A] hover:to-[#B83280] text-white font-semibold px-6"
+                        className="bg-white text-black hover:bg-white/90 font-semibold px-6"
                       >
                         LOGIN
                       </Button>
                     </motion.div>
                   </DialogTrigger>
-                  <DialogContent className="bg-[#2D3748] border-white/10">
+                  <DialogContent className="bg-[#111] border-white/10">
                     <DialogHeader>
                       <DialogTitle className="text-2xl font-bold text-white">Enter Your Name</DialogTitle>
                     </DialogHeader>
@@ -236,11 +236,11 @@ export default function Navigation() {
                         value={userName}
                         onChange={(e) => setUserName(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                        className="bg-[#1A202C] border-white/10 text-white placeholder:text-gray-500"
+                        className="bg-black border-white/10 text-white placeholder:text-white/30"
                       />
                       <Button
                         onClick={handleLogin}
-                        className="w-full bg-gradient-to-r from-[#6B46C1] to-[#D53F8C] hover:from-[#553C9A] hover:to-[#B83280] text-white font-semibold"
+                        className="w-full bg-white text-black hover:bg-white/90 font-semibold"
                       >
                         Start Playing
                       </Button>
@@ -268,7 +268,7 @@ export default function Navigation() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#1A202C]/95 backdrop-blur-xl border-t border-white/10"
+            className="md:hidden bg-black/95 backdrop-blur-xl border-t border-white/10"
           >
             <div className="px-4 py-4 space-y-2">
               {navLinks.map((link) => (
@@ -276,8 +276,8 @@ export default function Navigation() {
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${currentView === link.id
-                      ? 'bg-[#6B46C1]/20 text-[#9F7AEA]'
-                      : 'text-gray-300 hover:bg-white/5'
+                    ? 'bg-[#6B46C1]/20 text-[#9F7AEA]'
+                    : 'text-gray-300 hover:bg-white/5'
                     }`}
                 >
                   <link.icon className="w-5 h-5" />
