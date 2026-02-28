@@ -121,6 +121,20 @@ export default function AdminPanel() {
       setMessage({ type: 'error', text: 'Fill all contest fields' });
       return;
     }
+
+    const startData = new Date(contestStart);
+    const endData = new Date(contestEnd);
+
+    if (isNaN(startData.getTime()) || isNaN(endData.getTime())) {
+      setMessage({ type: 'error', text: 'Please fill out the complete date and time.' });
+      return;
+    }
+
+    if (endData <= startData) {
+      setMessage({ type: 'error', text: 'End time must be after start time' });
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/contests`, {
@@ -128,22 +142,23 @@ export default function AdminPanel() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: contestTitle,
-          startTime: new Date(contestStart).toISOString(),
-          endTime: new Date(contestEnd).toISOString(),
+          startTime: startData.toISOString(),
+          endTime: endData.toISOString(),
         }),
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         setMessage({ type: 'success', text: `Contest "${contestTitle}" created!` });
         setContestTitle('');
         setContestStart('');
         setContestEnd('');
         fetchContests();
       } else {
-        setMessage({ type: 'error', text: 'Failed to create contest' });
+        setMessage({ type: 'error', text: data.error || 'Failed to create contest' });
       }
-    } catch {
-      setMessage({ type: 'error', text: 'Server error' });
+    } catch (err: any) {
+      // Show exact error message to help debug CORS/network issues
+      setMessage({ type: 'error', text: `Error: ${err.message}` });
     }
     setLoading(false);
   };
